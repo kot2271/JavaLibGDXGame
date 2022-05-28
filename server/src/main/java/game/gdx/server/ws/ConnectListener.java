@@ -1,7 +1,7 @@
 package game.gdx.server.ws;
 
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.adapter.standard.StandardWebSocketSession;
 
 public interface ConnectListener {
-    void handle(WebSocketSession session);
+    void handle(StandardWebSocketSession session);
 }

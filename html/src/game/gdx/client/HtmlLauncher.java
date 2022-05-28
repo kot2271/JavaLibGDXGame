@@ -3,9 +3,11 @@ package game.gdx.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
+import com.google.gwt.user.client.Timer;
 import game.gdx.GameStarter;
-import game.gdx.ws.EventListenerCallback;
-import game.gdx.ws.WebSocket;
+import game.gdx.client.dto.InputStateImpl;
+import game.gdx.client.ws.EventListenerCallback;
+import game.gdx.client.ws.WebSocket;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,12 +33,29 @@ public class HtmlLauncher extends GwtApplication {
       }-*/
       ;
 
+  private native String toJson(Object object)
+    /*-{
+            return JSON.stringify(object);
+    }-*/
+  ;
+
   @Override
   public ApplicationListener createApplicationListener() {
     WebSocket client = getWebsocket("ws://localhost:8888/ws");
     AtomicBoolean once = new AtomicBoolean(false);
 
-    GameStarter gameStarter = new GameStarter();
+    GameStarter gameStarter = new GameStarter(new InputStateImpl());
+    gameStarter.setMessageSender(message ->
+            client.send(toJson(message))
+    );
+
+    Timer timer = new Timer() {
+      @Override
+      public void run() {
+        gameStarter.handleTimer();
+      }
+    };
+    timer.scheduleRepeating(1000);
 
     EventListenerCallback callback =
         event -> {

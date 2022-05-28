@@ -13,13 +13,17 @@ import java.util.stream.IntStream;
 
 public class GameStarter extends ApplicationAdapter {
   SpriteBatch batch;
-
   private Panzer me;
   private final List<Panzer> enemies = new ArrayList<>();
 
-  private KeyboardAdapter inputProcessor = new KeyboardAdapter();
+  private final KeyboardAdapter inputProcessor;
+  private MessageSender messageSender;
 
-  @Override
+    public GameStarter(InputState inputState) {
+        this.inputProcessor = new KeyboardAdapter(inputState);
+    }
+
+    @Override
   public void create() {
     Gdx.input.setInputProcessor(inputProcessor);
     batch = new SpriteBatch();
@@ -59,4 +63,15 @@ public class GameStarter extends ApplicationAdapter {
     batch.dispose();
     me.dispose();
   }
+
+    public void setMessageSender(MessageSender messageSender) {
+        this.messageSender = messageSender;
+    }
+
+    public void handleTimer() {
+        if (inputProcessor != null){
+            InputState playerState = inputProcessor.updateAndGetInputState(me.getOrigin());
+            messageSender.sendMessage(playerState);
+        }
+    }
 }

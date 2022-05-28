@@ -1,4 +1,4 @@
-package game.gdx.ws;
+package game.gdx.client.ws;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
